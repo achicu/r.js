@@ -1775,7 +1775,7 @@ define(function (require) {
                         //then delegate to that plugin.
                         parts = context.makeModuleMap(moduleName);
                         builder = parts.prefix && getOwn(context.defined, parts.prefix);
-                        if (builder) {
+                        if (builder && !hasProp(stubModulesByName, moduleName)) {
                             if (builder.onLayerEnd && falseProp(onLayerEndAdded, parts.prefix)) {
                                 onLayerEnds.push(builder);
                                 onLayerEndAdded[parts.prefix] = true;
@@ -1803,6 +1803,7 @@ define(function (require) {
                         } else {
                             return prim().start(function () {
                                 if (hasProp(stubModulesByName, moduleName)) {
+                                    console.log("Stubbing " + moduleName);
                                     //Just want to insert a simple module definition instead
                                     //of the source module. Useful for plugins that inline
                                     //all their resources.
