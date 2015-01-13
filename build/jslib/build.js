@@ -451,6 +451,9 @@ define(function (require) {
                                 var path = getOwn(module.layer.buildPathMap, excludeShallowModule);
                                 if (path) {
                                     build.removeModulePath(excludeShallowModule, path, module.layer);
+                                } else {
+                                    console.log("cannot find path for exclusion", excludeShallowModule);
+                                    // console.log(module.layer.buildPathMap);
                                 }
                             });
                         }
@@ -484,7 +487,7 @@ define(function (require) {
 
                             for (var i = 0; i < fileList.length; ++i) {
                                 var fileItem = fileList[i];
-                                console.log(fileItem.length + ": " + fileItem.path);
+                                console.log(fileItem.length + ": " + (fileItem.moduleName || "(unknown)") + " -> " + fileItem.path);
                             }
                         });
                     };
@@ -1437,7 +1440,10 @@ define(function (require) {
     build.removeModulePath = function (module, path, layer) {
         var index = layer.buildFilePaths.indexOf(path);
         if (index !== -1) {
+            console.log("removing ", module, path);
             layer.buildFilePaths.splice(index, 1);
+        } else {
+            console.log("!! could not remove ", module, path);
         }
     };
 
@@ -1948,6 +1954,7 @@ define(function (require) {
                         //Add the file to the final contents
                         fileList.push({
                             path: shortPath,
+                            moduleName: moduleName,
                             length: singleContents.length
                         });
                         fileContents += singleContents;
