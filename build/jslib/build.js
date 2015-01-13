@@ -476,6 +476,16 @@ define(function (require) {
 
                             }
                             buildFileContents += builtModule.buildText;
+
+                            var fileList = builtModule.fileList;
+                            fileList.sort(function (a, b) {
+                                return b.length - a.length;
+                            });
+
+                            for (var i = 0; i < fileList.length; ++i) {
+                                var fileItem = fileList[i];
+                                console.log(fileItem.length + ": " + fileItem.path);
+                            }
                         });
                     };
                 }));
@@ -1681,7 +1691,7 @@ define(function (require) {
      * included in the flattened module text.
      */
     build.flattenModule = function (module, layer, config) {
-        var fileContents, sourceMapGenerator,
+        var fileContents, fileList, sourceMapGenerator,
             sourceMapBase,
             buildFileContents = '';
 
@@ -1736,6 +1746,7 @@ define(function (require) {
 
             //Write the built module to disk, and build up the build output.
             fileContents = "";
+            fileList = [];
             return prim.serial(layer.buildFilePaths.map(function (path) {
                 return function () {
                     var lineCount,
@@ -1935,6 +1946,10 @@ define(function (require) {
                         }
 
                         //Add the file to the final contents
+                        fileList.push({
+                            path: shortPath,
+                            length: singleContents.length
+                        });
                         fileContents += singleContents;
                     });
                 };
@@ -1973,6 +1988,7 @@ define(function (require) {
             });
         }).then(function () {
             return {
+                fileList: fileList,
                 text: config.wrap ?
                         config.wrap.start + fileContents + config.wrap.end :
                         fileContents,
